@@ -13,4 +13,8 @@ windows.h
 -
 iostream
 -
+string
+-
+fstream
+-
 
