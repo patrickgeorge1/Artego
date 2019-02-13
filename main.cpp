@@ -8,11 +8,13 @@
 #include <windows.h>
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <fstream>
 
 using namespace std;
 
-
+ofstream fout;
+ifstream fin;
 /*  Declare Windows procedure  */
 LRESULT CALLBACK WindowProcedure(HWND, UINT, WPARAM, LPARAM);
 
@@ -25,7 +27,7 @@ HWND latime[100];
 HWND data1[100];
 HWND button_valideaza[100];
 
-int i = 0;
+int i = 0, counter = 1;
 char buffer[10];
 char textEP[20];
 char textTip[20];
@@ -35,8 +37,28 @@ char textData[20];
 char textAll[101];
 
 
+
+
 /*  Make the class name into a global variable  */
 TCHAR szClassName[] = _T("CodeBlocksWindowsApp");
+
+
+int getIndex(){
+
+    fin.open("record.txt", std::ios_base::in);
+    string line1;
+    string line;
+    while(getline(fin, line1)) {
+        line = line1;
+    }
+    char save[line.size()];
+    strcpy(save, line.c_str());
+    char *p = strtok(save, " ");
+    fin.close();
+
+    return atoi(p);
+}
+
 
 int WINAPI WinMain(HINSTANCE hThisInstance,
                    HINSTANCE hPrevInstance,
@@ -113,6 +135,11 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
     {
         case WM_CREATE:   // fac butoane, label etc
 
+            counter = getIndex();
+            counter++;
+            fout.open("record.txt", std::ios_base::app);
+
+
             button[0] = CreateWindow("BUTTON",
                                      "Iesire",
                                      WS_VISIBLE | WS_CHILD | WS_BORDER,
@@ -176,8 +203,6 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 default:
                     if (cmd > 2 && cmd < 103)
                     {
-                        ofstream fout;
-                        fout.open("record.txt", std::ios_base::app);
                         int gwtstat = 0;
                         gwtstat = GetWindowText(banda[cmd-3], &textEP[0], 20);
                         gwtstat = 0;
@@ -188,7 +213,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                         gwtstat = GetWindowText(latime[cmd-3], &textLatime[0], 20);
                         gwtstat = 0;
                         gwtstat = GetWindowText(data1[cmd-3], &textData[0], 20);
-                        itoa(i, buffer, 10);
+                        itoa(counter, buffer, 10);
                         strcpy(textAll, buffer);
                         strcat(textAll," ");
                         strcat(textAll,textEP);
@@ -202,18 +227,20 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                         strcat(textAll, textData);
                         fout << textAll << "\n";
                         ::MessageBox(hwnd, textAll,"text", MB_OKCANCEL);
-                        fout.close();
+                        counter++;
                     }
                     break;
             }
 
             break;
         case WM_DESTROY:
+            fout.close();
             PostQuitMessage(0);       /* send a WM_QUIT to the message queue */
             break;
         default:                      /* for messages that we don't deal with */
             return DefWindowProc(hwnd, message, wParam, lParam);
     }
+
 
     return 0;
 }
