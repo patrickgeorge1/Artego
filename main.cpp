@@ -62,7 +62,7 @@ int getIndex(){
 }
 
 void refresh() {
-    
+
 }
 
 
@@ -163,6 +163,12 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                                      340, 220, 100, 20,
                                      hwnd, (HMENU)3, NULL, NULL);
 
+            button[3] = CreateWindow("BUTTON",
+                                     "Calculeaza",
+                                     WS_VISIBLE | WS_CHILD | WS_BORDER,
+                                     230, 220, 100, 20,
+                                     hwnd, (HMENU)4, NULL, NULL);
+
 
             break;
 
@@ -261,6 +267,48 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                     }
                     break;
             }
+
+            break;
+        case WM_SIZE:
+
+            RECT rcParent;
+            GetClientRect(hwnd, &rcParent);
+            RECT rcButton[5];
+            GetClientRect(button[0], &rcButton[0]); // Pt a completa cu butoane se adauga la primul arg - 12 - (rcButton[x].right  - rcButton[x].left) si la al doilea se schimba cu x
+            SetWindowPos(button[0],
+                         NULL,
+                         (rcParent.right  - 12 - (rcButton[0].right  - rcButton[0].left)),
+                         (rcParent.bottom - 12 - (rcButton[0].bottom - rcButton[0].top)),
+                         0,
+                         0,
+                         SWP_NOACTIVATE | SWP_NOREPOSITION | SWP_NOSIZE | SWP_NOZORDER);
+
+            GetClientRect(button[1], &rcButton[1]);
+            SetWindowPos(button[1],
+                         NULL,
+                         (rcParent.right  - 12 - (rcButton[0].right  - rcButton[0].left) - 12 - (rcButton[1].right  - rcButton[1].left)),
+                         (rcParent.bottom - 12 - (rcButton[1].bottom - rcButton[1].top)),
+                         0,
+                         0,
+                         SWP_NOACTIVATE | SWP_NOREPOSITION | SWP_NOSIZE | SWP_NOZORDER);
+
+            GetClientRect(button[2], &rcButton[2]);
+            SetWindowPos(button[2],
+                         NULL,
+                         (rcParent.right  - 12 - (rcButton[0].right  - rcButton[0].left) - 12 - (rcButton[1].right  - rcButton[1].left)) - 12 - (rcButton[2].right - rcButton[2].left),
+                         (rcParent.bottom - 12 - (rcButton[2].bottom - rcButton[2].top)),
+                         0,
+                         0,
+                         SWP_NOACTIVATE | SWP_NOREPOSITION | SWP_NOSIZE | SWP_NOZORDER);
+
+            GetClientRect(button[3], &rcButton[3]);
+            SetWindowPos(button[3],
+                         NULL,
+                         (rcParent.right  - 12 - (rcButton[0].right  - rcButton[0].left) - 12 - (rcButton[1].right  - rcButton[1].left)) - 12 - (rcButton[2].right - rcButton[2].left) - 12 - (rcButton[3].right - rcButton[3].left),
+                         (rcParent.bottom - 12 - (rcButton[3].bottom - rcButton[3].top)),
+                         0,
+                         0,
+                         SWP_NOACTIVATE | SWP_NOREPOSITION | SWP_NOSIZE | SWP_NOZORDER);
 
             break;
         case WM_DESTROY:
