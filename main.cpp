@@ -27,6 +27,8 @@ HWND latime[100];
 HWND data1[100];
 HWND button_valideaza[100];
 
+int button_index[100];
+
 int i = 0, counter = 1;
 char buffer[10];
 char textEP[20];
@@ -57,6 +59,10 @@ int getIndex(){
     fin.close();
 
     return atoi(p);
+}
+
+void refresh() {
+    
 }
 
 
@@ -138,7 +144,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             counter = getIndex();
             counter++;
             fout.open("record.txt", std::ios_base::app);
-
+            std::fill_n(button_index, 100, -1);
 
             button[0] = CreateWindow("BUTTON",
                                      "Iesire",
@@ -150,6 +156,12 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                                      WS_VISIBLE | WS_CHILD | WS_BORDER,
                                      450, 220, 100, 20,
                                      hwnd, (HMENU)2, NULL, NULL);
+
+            button[2] = CreateWindow("BUTTON",
+                                     "Refresh",
+                                     WS_VISIBLE | WS_CHILD | WS_BORDER,
+                                     340, 220, 100, 20,
+                                     hwnd, (HMENU)3, NULL, NULL);
 
 
             break;
@@ -196,24 +208,42 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                                                        "Scrie",
                                                        WS_VISIBLE | WS_CHILD | WS_BORDER,
                                                        475, 30 * i, 80, 20,
-                                                       hwnd, (HMENU)(i+3), NULL, NULL);
+                                                       hwnd, (HMENU)(i+5), NULL, NULL);
                     i++;
                     break;
+                case 3:         // Refresh
 
+                    refresh();
+
+                    break;
+                case 4:         // Compute
+                    break;
                 default:
-                    if (cmd > 2 && cmd < 103)
+                    if (cmd > 4 && cmd < 103)
                     {
+                        int index;
+                        if (button_index[cmd-3] == -1){   // daca buton index nu a fost setata
+                            button_index[cmd-3] = counter;
+                            index = counter;
+                            //cout << "Prima apasare a butinului " << cmd-3 << " si primeste index "<<counter<<endl;
+                            counter++;
+                        } else {                       // a fost setat
+                            index = button_index[cmd-3];
+                            //cout << "Deja apasat butonul "<< cmd-3 << " si are vechiul index " << button_index[cmd-3] << endl;
+                            ::MessageBox(hwnd, "Pentru a rescrie apasa pe REFRESH","Suprascriere", MB_OK);
+                        }
+
                         int gwtstat = 0;
-                        gwtstat = GetWindowText(banda[cmd-3], &textEP[0], 20);
+                        gwtstat = GetWindowText(banda[cmd-5], &textEP[0], 20);
                         gwtstat = 0;
-                        gwtstat = GetWindowText(tip[cmd-3], &textTip[0], 20);
+                        gwtstat = GetWindowText(tip[cmd-5], &textTip[0], 20);
                         gwtstat = 0;
-                        gwtstat = GetWindowText(lungime[cmd-3], &textLungime[0], 20);
+                        gwtstat = GetWindowText(lungime[cmd-5], &textLungime[0], 20);
                         gwtstat = 0;
-                        gwtstat = GetWindowText(latime[cmd-3], &textLatime[0], 20);
+                        gwtstat = GetWindowText(latime[cmd-5], &textLatime[0], 20);
                         gwtstat = 0;
-                        gwtstat = GetWindowText(data1[cmd-3], &textData[0], 20);
-                        itoa(counter, buffer, 10);
+                        gwtstat = GetWindowText(data1[cmd-5], &textData[0], 20);
+                        itoa(index, buffer, 10);
                         strcpy(textAll, buffer);
                         strcat(textAll," ");
                         strcat(textAll,textEP);
@@ -227,7 +257,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                         strcat(textAll, textData);
                         fout << textAll << "\n";
                         ::MessageBox(hwnd, textAll,"text", MB_OKCANCEL);
-                        counter++;
+
                     }
                     break;
             }
