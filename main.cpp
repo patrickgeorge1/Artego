@@ -257,6 +257,42 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
     {
         case WM_CREATE:   // fac butoane, label etc
 
+            static HWND hwnd_st_u, hwnd_ed_u;
+            hwnd_st_u = CreateWindow("static", "ST_U",
+                                     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+                                     15, 10, 45, 15,
+                                     hwnd, (HMENU)(501),
+                                     (HINSTANCE) GetWindowLong (hwnd, GWL_HINSTANCE), NULL);
+            SetWindowText(hwnd_st_u, "Banda");
+            hwnd_st_u = CreateWindow("static", "ST_U",
+                                     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+                                     85, 10, 30, 15,
+                                     hwnd, (HMENU)(501),
+                                     (HINSTANCE) GetWindowLong (hwnd, GWL_HINSTANCE), NULL);
+            SetWindowText(hwnd_st_u, "Tip");
+            hwnd_st_u = CreateWindow("static", "ST_U",
+                                     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+                                     176, 10, 60, 15,
+                                     hwnd, (HMENU)(501),
+                                     (HINSTANCE) GetWindowLong (hwnd, GWL_HINSTANCE), NULL);
+            SetWindowText(hwnd_st_u, "Lungime");
+            hwnd_st_u = CreateWindow("static", "ST_U",
+                                     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+                                     270, 10, 90, 15,
+                                     hwnd, (HMENU)(501),
+                                     (HINSTANCE) GetWindowLong (hwnd, GWL_HINSTANCE), NULL);
+            SetWindowText(hwnd_st_u, "Latime   (mm)");
+            hwnd_st_u = CreateWindow("static", "ST_U",
+                                     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+                                     390, 10, 35, 15,
+                                     hwnd, (HMENU)(501),
+                                     (HINSTANCE) GetWindowLong (hwnd, GWL_HINSTANCE), NULL);
+            SetWindowText(hwnd_st_u, "Data");
+
+
+
+
+
             counter = getIndex();
             counter++;
             cout << "Number of records = " << counter-1 <<endl;
@@ -302,28 +338,28 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 case 2:   // Adaug nou record
 
                     banda[i] = CreateWindow("EDIT",
-                                            "EP",
+                                            "ee",
                                             WS_BORDER | WS_CHILD | WS_VISIBLE,
                                             20, 30 * j, 30, 25,
                                             hwnd, NULL, NULL, NULL);
                     tip[i] = CreateWindow("EDIT",
-                                          "100",
+                                          NULL,
                                           WS_BORDER | WS_CHILD | WS_VISIBLE,
                                           55, 30 * j, 100, 25,
                                           hwnd, NULL, NULL, NULL);
                     lungime[i] = CreateWindow("EDIT",
-                                              "Lungime",
+                                              NULL,
                                               WS_BORDER | WS_CHILD | WS_VISIBLE,
                                               160, 30 * j, 100, 25,
                                               hwnd, NULL, NULL, NULL);
                     latime[i] = CreateWindow("EDIT",
-                                             "Latime",
+                                             NULL,
                                              WS_BORDER | WS_CHILD | WS_VISIBLE,
                                              265, 30 * j, 100, 25,
                                              hwnd, NULL, NULL, NULL);
 
                     data1[i] = CreateWindow("EDIT",
-                                            "Data",
+                                            NULL,
                                             WS_BORDER | WS_CHILD | WS_VISIBLE,
                                             370, 30 * j, 100, 25,
                                             hwnd, NULL, NULL, NULL);
