@@ -3,13 +3,17 @@
 #elif defined(_UNICODE) && !defined(UNICODE)
 #define UNICODE
 #endif
+#define citire_item(pos) in>>items[pos].index>>items[pos].eep>>items[pos].tip>>items[pos].lungime>>items[pos].latime>>items[pos].data>>items[pos].arie>>useless>>items[pos].greutate>>useless
+
 
 #include <tchar.h>
 #include <windows.h>
 #include <iostream>
-#include <string>
 #include <cstring>
 #include <fstream>
+#include <math.h>
+#include <vector>
+
 
 using namespace std;
 
@@ -29,7 +33,7 @@ HWND button_valideaza[100];
 
 int button_index[100];
 
-int i = 0, counter = 1;
+int i = 0, counter = 1, j = 1;
 char buffer[10];
 char textEP[20];
 char textTip[20];
@@ -44,6 +48,16 @@ char textAll[101];
 /*  Make the class name into a global variable  */
 TCHAR szClassName[] = _T("CodeBlocksWindowsApp");
 
+struct item {
+    int index;
+    char eep[3];
+    int tip;
+    float lungime;
+    float latime;
+    char data[20];
+    float arie;
+    float greutate;
+};
 
 int getIndex(){
 
@@ -61,8 +75,110 @@ int getIndex(){
     return atoi(p);
 }
 
-void refresh() {
+int getLines(){
+    fin.open("record.txt", std::ios_base::in);
+    string line1;
+    int nr = 0;
+    while(getline(fin, line1)) {
+        nr++;
+    }
+    fin.close();
 
+    return nr;
+}
+
+void refresh() {         // revad size
+    ifstream in("record.txt");
+    ofstream out("other.txt");
+    int size = getLines();
+    item items[size];
+    cout << "Number of duplicates = "<< size<<endl;
+    for (int k = 1; k <= size-1 ; ++k) {
+        string line;
+        getline(in, line);
+        char save[line.size()];
+        strcpy(save, line.c_str());
+        char *p = strtok(save, " ");
+        items[k].index = atoi(p);
+        p = strtok(NULL, " ");
+        strcpy(items[k].eep, p);
+        p = strtok(NULL, " ");
+        items[k].tip = atoi(p);
+        p = strtok(NULL, " ");
+        items[k].lungime = atof(p);
+        p = strtok(NULL, " ");
+        items[k].latime = atof(p);
+        p = strtok(NULL, " ");
+        strcpy(items[k].data, p);
+        p = strtok(NULL, " ");
+        items[k].arie = atof(p);
+        p = strtok(NULL, " ");
+        items[k].greutate = atof(p);
+        //cout<<"Data este = "<<items[5].data<<endl;
+    }
+
+    string line;
+    getline(in, line);
+    char save[line.size()];
+    strcpy(save, line.c_str());
+    char *p = strtok(save, " ");
+    items[size].index = atoi(p);
+    p = strtok(NULL, " ");
+    strcpy(items[size].eep, p);
+    p = strtok(NULL, " ");
+    items[size].tip = atoi(p);
+    p = strtok(NULL, " ");
+    items[size].lungime = atof(p);
+    p = strtok(NULL, " ");
+    items[size].latime = atof(p);
+    p = strtok(NULL, " ");
+    strcpy(items[size].data, p);
+    char copie[20];
+    strcpy(copie,items[size].data);
+    p = strtok(NULL, " ");
+    items[size].arie = atof(p);
+    p = strtok(NULL, " ");
+    items[size].greutate = atof(p);
+    strcpy(items[size].data,copie);
+    //cout << "data din  ="<<items[size].data;
+
+
+
+//    for (int k = 1; k <= size; ++k) {
+//        cout << items[k].index<< " " <<items[k].eep<< " " <<items[k].tip<< " "<<items[k].lungime<<" "<<items[k].latime <<" " <<items[k].data<<" "<<items[k].arie <<" m^2 " <<items[k].greutate<<" kg"<<endl;
+//
+//
+//    }
+
+    for (int o = 1; o <= size ; ++o) {
+
+        for (int oo = o + 1; oo <= size; ++oo) {
+            if(items[o].index == items[oo].index)  // daca sunt la fel
+            {
+
+                strcpy(items[o].eep,items[oo].eep);
+                strcpy(items[o].data,items[oo].data);
+                items[o].tip = items[oo].tip;
+                items[o].lungime = items[oo].lungime;
+                items[o].latime = items[oo].latime;
+                items[o].arie = items[oo].arie;
+                items[o].greutate = items[oo].greutate;
+
+            }
+        }
+    }
+
+    int nr = 1;
+    for (int o = 1; o <= size ; ++o) {
+        if(nr == items[o].index){
+            out << nr << " " << items[o].eep<< " " << items[o].tip<< " " << items[o].lungime<< " " << items[o].latime<<" "<<items[o].data<<" "<< items[o].arie<< " m^2 " << items[o].greutate<<" kg"<<"\n";
+            nr++;
+        }
+    }
+    in.close();
+    out.close();
+    // sterg fisier record.txt
+    //redenumesc pe other.txt in record.txt
 }
 
 
@@ -143,7 +259,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
             counter = getIndex();
             counter++;
-            fout.open("record.txt", std::ios_base::app);
+            cout << "Number of records = " << counter-1 <<endl;
+
             std::fill_n(button_index, 100, -1);
 
             button[0] = CreateWindow("BUTTON",
@@ -187,39 +304,55 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                     banda[i] = CreateWindow("EDIT",
                                             "EP",
                                             WS_BORDER | WS_CHILD | WS_VISIBLE,
-                                            20, 30 * i, 30, 25,
+                                            20, 30 * j, 30, 25,
                                             hwnd, NULL, NULL, NULL);
                     tip[i] = CreateWindow("EDIT",
                                           "100",
                                           WS_BORDER | WS_CHILD | WS_VISIBLE,
-                                          55, 30 * i, 100, 25,
+                                          55, 30 * j, 100, 25,
                                           hwnd, NULL, NULL, NULL);
                     lungime[i] = CreateWindow("EDIT",
                                               "Lungime",
                                               WS_BORDER | WS_CHILD | WS_VISIBLE,
-                                              160, 30 * i, 100, 25,
+                                              160, 30 * j, 100, 25,
                                               hwnd, NULL, NULL, NULL);
                     latime[i] = CreateWindow("EDIT",
                                              "Latime",
                                              WS_BORDER | WS_CHILD | WS_VISIBLE,
-                                             265, 30 * i, 100, 25,
+                                             265, 30 * j, 100, 25,
                                              hwnd, NULL, NULL, NULL);
 
                     data1[i] = CreateWindow("EDIT",
                                             "Data",
                                             WS_BORDER | WS_CHILD | WS_VISIBLE,
-                                            370, 30 * i, 100, 25,
+                                            370, 30 * j, 100, 25,
                                             hwnd, NULL, NULL, NULL);
                     button_valideaza[i] = CreateWindow("BUTTON",
                                                        "Scrie",
                                                        WS_VISIBLE | WS_CHILD | WS_BORDER,
-                                                       475, 30 * i, 80, 20,
+                                                       475, 30 * j, 80, 20,
                                                        hwnd, (HMENU)(i+5), NULL, NULL);
                     i++;
+                    j++;
+
                     break;
                 case 3:         // Refresh
 
                     refresh();
+                    std::remove("record.txt");
+                    std::rename("other.txt", "record.txt");
+                    for (int t = 0; t < 102; ++t) {
+                        DestroyWindow(button_valideaza[t]);
+                        DestroyWindow(banda[t]);
+                        DestroyWindow(tip[t]);
+                        DestroyWindow(lungime[t]);
+                        DestroyWindow(latime[t]);
+                        DestroyWindow(data1[t]);
+
+                    }
+                    j = 1;
+
+
 
                     break;
                 case 4:         // Compute
@@ -228,6 +361,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                     if (cmd > 4 && cmd < 103)
                     {
                         int index;
+                        fout.open("record.txt", std::ios_base::app);
                         if (button_index[cmd-3] == -1){   // daca buton index nu a fost setata
                             button_index[cmd-3] = counter;
                             index = counter;
@@ -250,6 +384,10 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                         gwtstat = 0;
                         gwtstat = GetWindowText(data1[cmd-5], &textData[0], 20);
                         itoa(index, buffer, 10);
+                        float latime = atof(textLatime);
+                        float lungime = atof(textLungime);
+                        latime = latime / 1000;    // conversia in metrii
+                        float arie = lungime * latime;
                         strcpy(textAll, buffer);
                         strcat(textAll," ");
                         strcat(textAll,textEP);
@@ -261,9 +399,11 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                         strcat(textAll, textLatime);
                         strcat(textAll, " ");
                         strcat(textAll, textData);
-                        fout << textAll << "\n";
+                        strcat(textAll," ");
+                        fout << textAll <<" " << arie << " m^2 ";  // arie
+                        fout << "greutate" << " kg" << "\n";
                         ::MessageBox(hwnd, textAll,"text", MB_OKCANCEL);
-
+                        fout.close();
                     }
                     break;
             }
@@ -312,7 +452,6 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
             break;
         case WM_DESTROY:
-            fout.close();
             PostQuitMessage(0);       /* send a WM_QUIT to the message queue */
             break;
         default:                      /* for messages that we don't deal with */

@@ -13,10 +13,12 @@ windows.h
 -
 iostream
 -
-string
--
 cstring
 -
 fstream
+-
+math.h
+-
+vector
 -
 
