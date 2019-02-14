@@ -87,6 +87,44 @@ int getLines(){
     return nr;
 }
 
+float weight(char textEp[20], char textTip[20], float arie){
+    float mass = 0;
+    float ee[500] = {0};
+    float ep[630] = {0};
+    ee[80]  = 0.33;  // ee
+    ee[100] = 0.38;
+    ee[125] = 0.48;
+    ee[150] = 0.51;
+    ee[160] = 0.58;
+    ee[200] = 0.717;
+    ee[250] = 0.79;
+    ee[300] = 0.885;
+    ee[500] = 1.46;
+
+    ep[80]  = 0.33;   // ep
+    ep[100] = 0.38;
+    ep[125] = 0.46;
+    ep[160] = 0.57;
+    ep[200] = 0.70;
+    ep[250] = 0.84;
+    ep[315] = 1.16;
+    ep[400] = 1.30;
+    ep[500] = 1.64;
+    ep[630] = 1.70;
+    if(strcmp(textEp,"ee") == 0)                // este ee
+    {
+        mass = ee[atoi(textTip)] * arie;
+    }
+    else                                        // este ep
+    {
+        mass = ep[atoi(textTip)] * arie;
+    }
+
+
+
+    return mass;
+}
+
 void refresh() {         // revad size
     ifstream in("record.txt");
     ofstream out("other.txt");
@@ -113,7 +151,9 @@ void refresh() {         // revad size
         p = strtok(NULL, " ");
         items[k].arie = atof(p);
         p = strtok(NULL, " ");
+        p = strtok(NULL, " ");
         items[k].greutate = atof(p);
+        //cout << "Greutatile sunt = "<< p<< endl;
         //cout<<"Data este = "<<items[5].data<<endl;
     }
 
@@ -137,6 +177,7 @@ void refresh() {         // revad size
     strcpy(copie,items[size].data);
     p = strtok(NULL, " ");
     items[size].arie = atof(p);
+    p = strtok(NULL, " ");
     p = strtok(NULL, " ");
     items[size].greutate = atof(p);
     strcpy(items[size].data,copie);
@@ -389,13 +430,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                     j = 1;
 
 
-
+                    Beep( 750, 300 );
                     break;
                 case 4:         // Compute
                     break;
                 default:
                     if (cmd > 4 && cmd < 103)
                     {
+
                         int index;
                         fout.open("record.txt", std::ios_base::app);
                         if (button_index[cmd-3] == -1){   // daca buton index nu a fost setata
@@ -424,6 +466,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                         float lungime = atof(textLungime);
                         latime = latime / 1000;    // conversia in metrii
                         float arie = lungime * latime;
+                        float mass = 0;
+                        mass = weight(textEP, textTip, arie);
                         strcpy(textAll, buffer);
                         strcat(textAll," ");
                         strcat(textAll,textEP);
@@ -437,9 +481,10 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                         strcat(textAll, textData);
                         strcat(textAll," ");
                         fout << textAll <<" " << arie << " m^2 ";  // arie
-                        fout << "greutate" << " kg" << "\n";
-                        ::MessageBox(hwnd, textAll,"text", MB_OKCANCEL);
+                        fout << mass << " kg" << "\n";
+                        //::MessageBox(hwnd, textAll,"text", MB_OKCANCEL);
                         fout.close();
+                        Beep( 750, 300 );
                     }
                     break;
             }
