@@ -89,8 +89,8 @@ int getLines(){
 
 float weight(char textEp[20], char textTip[20], float arie){
     float mass = 0;
-    float ee[500] = {0};
-    float ep[630] = {0};
+    float ee[501] = {0};
+    float ep[631] = {0};
     ee[80]  = 0.33;  // ee
     ee[100] = 0.38;
     ee[125] = 0.48;
@@ -126,6 +126,8 @@ float weight(char textEp[20], char textTip[20], float arie){
 }
 
 void refresh() {         // revad size
+
+
     ifstream in("record.txt");
     ofstream out("other.txt");
     int size = getLines();
@@ -222,6 +224,83 @@ void refresh() {         // revad size
     //redenumesc pe other.txt in record.txt
 }
 
+int compute_registry() {
+    ifstream in("record.txt");
+    ofstream out("inchidere_de_luna.txt");
+    float ee[501][2] = {0};   // ep[type][0] ---> arie
+    float ep[631][2] = {0};   // ep[type][1] ---> greutate
+    int size = getLines() - 1;
+   // ee[500][0] = 0;
+   // ee[500][1] = 0;
+
+
+    for (int i = 0; i <= size; i++){
+
+        string line;
+        getline(in, line);
+        char save[line.size()];
+        strcpy(save, line.c_str());
+        char *p = strtok(save, " ");
+        int type = 0;
+        char banda[3];
+        float weight;
+        float supraface;
+        p = strtok(NULL, " ");
+        strcpy(banda, p);
+        p = strtok(NULL, " ");
+        type = atoi(p);
+        p = strtok(NULL, " ");
+        p = strtok(NULL, " ");
+        p = strtok(NULL, " ");
+        p = strtok(NULL, " ");
+        supraface = atof(p);
+        p = strtok(NULL, " ");
+        p = strtok(NULL, " ");
+        weight = atof(p);
+        if(strcmp("ee", banda)==0)           // este ee
+        {
+            ee[type][0] += supraface;
+            ee[type][1] += weight;
+        }
+        else
+        {
+            ep[type][0] += supraface;
+            ep[type][1] += weight;
+        }
+        // cout << banda << " " << type << " " << supraface << " m2 " << weight << " kg"<<endl;
+
+    }
+
+
+
+    out <<"EE  80     "<< ee[80][0] <<"  m^2      "<< ee[80][1] << "  kg" <<endl;
+    out <<"EE 100     "<< ee[100][0] <<"  m^2      "<< ee[100][1] << "  kg" <<endl;
+    out <<"EE 125     "<< ee[125][0] <<"  m^2      "<< ee[125][1] << "  kg" <<endl;
+    out <<"EE 150     "<< ee[150][0] <<"  m^2      "<< ee[150][1] << "  kg" <<endl;
+    out <<"EE 160     "<< ee[160][0] <<"  m^2      "<< ee[160][1] << "  kg" <<endl;
+    out <<"EE 200     "<< ee[200][0] <<"  m^2      "<< ee[200][1] << "  kg" <<endl;
+    out <<"EE 250     "<< ee[250][0] <<"  m^2      "<< ee[250][1] << "  kg" <<endl;
+    out <<"EE 300     "<< ee[300][0] <<"  m^2      "<< ee[300][1] << "  kg" <<endl;
+    out <<"EE 500     "<< ee[500][0] <<"  m^2      "<< ee[500][1] << "  kg" <<endl;
+
+    out << endl << endl;
+
+    out <<"EP  80     "<< ep[80][0] <<"  m^2      "<< ep[80][1] << "  kg" <<endl;
+    out <<"EP 100     "<< ep[100][0] <<"  m^2      "<< ep[100][1] << "  kg" <<endl;
+    out <<"EP 125     "<< ep[125][0] <<"  m^2      "<< ep[125][1] << "  kg" <<endl;
+    out <<"EP 160     "<< ep[160][0] <<"  m^2      "<< ep[160][1] << "  kg" <<endl;
+    out <<"EP 200     "<< ep[200][0] <<"  m^2      "<< ep[200][1] << "  kg" <<endl;
+    out <<"EP 250     "<< ep[250][0] <<"  m^2      "<< ep[250][1] << "  kg" <<endl;
+    out <<"EP 315     "<< ep[315][0] <<"  m^2      "<< ep[315][1] << "  kg" <<endl;
+    out <<"EP 400     "<< ep[400][0] <<"  m^2      "<< ep[400][1] << "  kg" <<endl;
+    out <<"EP 500     "<< ep[500][0] <<"  m^2      "<< ep[500][1] << "  kg" <<endl;
+    out <<"EP 630     "<< ep[630][0] <<"  m^2      "<< ep[630][1] << "  kg" <<endl;
+
+
+    in.close();
+    out.close();
+    return 1;
+}
 
 int WINAPI WinMain(HINSTANCE hThisInstance,
                    HINSTANCE hPrevInstance,
@@ -433,6 +512,11 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                     Beep( 750, 300 );
                     break;
                 case 4:         // Compute
+                    if(compute_registry())
+                        ::MessageBox(hwnd, "Datele au fost prelucrate cu succes","Calculeaza", MB_OK);
+                    else
+                        ::MessageBox(hwnd, "Eroare la prelucrare","Calculeaza", MB_OK);
+
                     break;
                 default:
                     if (cmd > 4 && cmd < 103)
